@@ -1,0 +1,76 @@
+{
+  "project_info": {
+    "project_number": "370320379141",
+    "project_id": "vitchat-653f9",
+    "storage_bucket": "vitchat-653f9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:370320379141:android:d9e85c067c15688dec7b6c",
+        "android_client_info": {
+          "package_name": "com.example.vitchat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "370320379141-k8q5spn7p8n4mhhvmhmahpb3535uh0n3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrUcCP-_3JRhhmRtpCGRh4XYDS5HThIDM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "370320379141-k8q5spn7p8n4mhhvmhmahpb3535uh0n3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:370320379141:android:09608693fc2f5497ec7b6c",
+        "android_client_info": {
+          "package_name": "com.example.vitchatmessanger"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "370320379141-h7c5vni6tcgtftnem4ce6e63ov711dhv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.vitchatmessanger",
+            "certificate_hash": "408c7b1c9bcac931f5bc25bf6e61f23e1e752296"
+          }
+        },
+        {
+          "client_id": "370320379141-k8q5spn7p8n4mhhvmhmahpb3535uh0n3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrUcCP-_3JRhhmRtpCGRh4XYDS5HThIDM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "370320379141-k8q5spn7p8n4mhhvmhmahpb3535uh0n3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
