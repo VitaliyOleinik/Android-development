@@ -1,5 +1,7 @@
 package com.example.vitchatmessanger;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -13,6 +15,9 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -32,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
     FirebaseDatabase database;
     DatabaseReference messagesDatabaseReference;
+    ChildEventListener messagesChildEventListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +88,14 @@ public class MainActivity extends AppCompatActivity {
         sendMessageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                ChatMessage message = new ChatMessage();
+                message.setText(messageEditText.getText().toString());
+                message.setName(userName);
+                message.setImageUrl(null);
+
+                messagesDatabaseReference.push().setValue(message);
+
                 messageEditText.setText("");
             }
         });
@@ -92,5 +106,35 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        messagesChildEventListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                ChatMessage message = dataSnapshot.getValue(ChatMessage.class);
+
+                adapter.add(message);
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+        messagesDatabaseReference.addChildEventListener(messagesChildEventListener);
     }
 }
