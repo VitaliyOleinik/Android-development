@@ -64,5 +64,6 @@
         android:clickable="true"
         android:onClick="toggleLoginMode"
         android:text="Tap To Log In"
+        android:textColor="#283165"
         android:textSize="16sp" />
 </LinearLayout>
