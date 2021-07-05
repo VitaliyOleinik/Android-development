@@ -17,6 +17,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class SingInActivity extends AppCompatActivity {
 
@@ -33,12 +35,17 @@ public class SingInActivity extends AppCompatActivity {
 
     private boolean loginModeActive;
 
+    FirebaseDatabase database;
+    DatabaseReference usersDatabaseReference;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sing_in);
 
         auth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance("https://vitchat-653f9-default-rtdb.firebaseio.com/");
+        usersDatabaseReference = database.getReference().child("users");
 
         emailEditText = findViewById(R.id.emailEditText);
         passwordEditText = findViewById(R.id.passwordEditText);
@@ -76,6 +83,7 @@ public class SingInActivity extends AppCompatActivity {
                                     // Sign in success, update UI with the signed-in user's information
                                     Log.d(TAG, "signInWithEmail:success");
                                     FirebaseUser user = auth.getCurrentUser();
+                                    createUser(user);
                                     startActivity(new Intent(SingInActivity.this, MainActivity.class));
                                     //updateUI(user);
                                 } else {
@@ -122,6 +130,15 @@ public class SingInActivity extends AppCompatActivity {
             }
         }
 
+    }
+
+    private void createUser(FirebaseUser firebaseUser) {
+        User user = new User();
+        user.setId(firebaseUser.getUid());
+        user.setEmail(firebaseUser.getEmail());
+        user.setName(nameEditText.getText().toString().trim());
+
+        usersDatabaseReference.push().setValue(user);
     }
 
     public void toggleLoginMode(View view) {
