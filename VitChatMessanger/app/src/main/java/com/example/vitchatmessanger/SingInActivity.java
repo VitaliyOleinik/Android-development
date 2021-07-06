@@ -84,7 +84,9 @@ public class SingInActivity extends AppCompatActivity {
                                     Log.d(TAG, "signInWithEmail:success");
                                     FirebaseUser user = auth.getCurrentUser();
                                     createUser(user);
-                                    startActivity(new Intent(SingInActivity.this, MainActivity.class));
+                                    Intent intent = new Intent(SingInActivity.this, MainActivity.class);
+                                    intent.putExtra("userName", nameEditText.getText().toString().trim());
+                                    startActivity(intent);
                                     //updateUI(user);
                                 } else {
                                     // If sign in fails, display a message to the user.
@@ -116,7 +118,9 @@ public class SingInActivity extends AppCompatActivity {
                                 // Sign in success, update UI with the signed-in user's information
                                 Log.d(TAG, "createUserWithEmail:success");
                                 FirebaseUser user = auth.getCurrentUser();
-                                startActivity(new Intent(SingInActivity.this, MainActivity.class));
+                                Intent intent = new Intent(SingInActivity.this, MainActivity.class);
+                                intent.putExtra("userName", nameEditText.getText().toString().trim());
+                                startActivity(intent);
                                 //updateUI(user);
                             } else {
                                 // If sign in fails, display a message to the user.
@@ -144,13 +148,13 @@ public class SingInActivity extends AppCompatActivity {
     public void toggleLoginMode(View view) {
         if (loginModeActive) {
             loginModeActive = false;
-            loginSingUpButton.setText("Sing Up");
+            loginSingUpButton.setText("Sign Up");
             toggleLoginSignUpTextView.setText("Or, log in");
             confirmPasswordEditText.setVisibility(View.VISIBLE);
         } else {
             loginModeActive = true;
             loginSingUpButton.setText("Log In");
-            toggleLoginSignUpTextView.setText("Or, sing up");
+            toggleLoginSignUpTextView.setText("Or, sign up");
             confirmPasswordEditText.setVisibility(View.GONE);
         }
     }
