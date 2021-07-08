@@ -23,6 +23,10 @@ import java.util.ArrayList;
 
 public class UserListActivity extends AppCompatActivity {
 
+    private String userName;
+
+    private FirebaseAuth auth;
+
     private DatabaseReference usersDatabaseReference;
     private ChildEventListener usersChildEventListener;
 
@@ -35,6 +39,12 @@ public class UserListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_list);
+        Intent intent = getIntent();
+        if (intent != null){
+            userName = intent.getStringExtra(userName);
+        }
+
+        auth = FirebaseAuth.getInstance();
 
         userArrayList = new ArrayList<>();
         attachUserDatabaseReferenceListener();
@@ -51,9 +61,11 @@ public class UserListActivity extends AppCompatActivity {
                 @Override
                 public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                     User user = dataSnapshot.getValue(User.class);
-                    user.setAvatarMockUpResource(R.drawable.ic_baseline_person_50);
-                    userArrayList.add(user);
-                    userAdapter.notifyDataSetChanged();
+                    if(!user.getId().equals(auth.getCurrentUser().getUid())){
+                        user.setAvatarMockUpResource(R.drawable.ic_baseline_person_50);
+                        userArrayList.add(user);
+                        userAdapter.notifyDataSetChanged();
+                    }
                 }
 
                 @Override
@@ -89,6 +101,20 @@ public class UserListActivity extends AppCompatActivity {
 
         userRecyclerView.setLayoutManager(userLayoutManager);
         userRecyclerView.setAdapter(userAdapter);
+        
+        userAdapter.setOnClickListener(new UserAdapter.OnUserClickListener() {
+            @Override
+            public void onUserClick(int position) {
+                gotToChat(position);
+            }
+        });
+    }
+
+    private void gotToChat(int position) {
+        Intent intent = new Intent(UserListActivity.this, ChatActivity.class);
+        intent.putExtra("recipientUserId", userArrayList.get(position).getId());
+        intent.putExtra("userName", userName);
+        startActivity(intent);
     }
 
     @Override
