@@ -46,7 +46,7 @@ public class ChatActivity extends AppCompatActivity {
     private EditText messageEditText;
 
     private String userName;
-
+    private String recipientUserName;
     private String recipientUserId;
 
     private static final int RC_IMAGE_PICKER = 123;
@@ -77,9 +77,10 @@ public class ChatActivity extends AppCompatActivity {
         if (intent != null){
             userName = intent.getStringExtra("userName");
             recipientUserId = intent.getStringExtra("recipientUserId");
-        } else {
-            userName = "Default User";
+            recipientUserName = intent.getStringExtra("recipientUserName");
         }
+
+        setTitle("Chat with " + recipientUserName);
 
         database = FirebaseDatabase.getInstance("https://vitchat-653f9-default-rtdb.firebaseio.com/");
         storage = FirebaseStorage.getInstance();
