@@ -11,9 +11,10 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.text.FieldPosition
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), PostAdapter.RecyclerViewItemClick {
 
     lateinit var recyclerView: RecyclerView
+    lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
     private var postAdapter: PostAdapter? = null
 
@@ -24,28 +25,39 @@ class MainActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
+        swipeRefreshLayout.setOnRefreshListener {
+            postAdapter?.clearAll()
+            getPosts()
+        }
+
         postAdapter = PostAdapter(itemClickListener = this)
         recyclerView.adapter = postAdapter
 
         getPosts()
     }
 
-    override fun itemClick(position: Int, item: Post){
-        Toast.makeText(this, item.title, Toast.LENGTH_SHORT).show()
+    override fun itemClick(position: Int, item: Post) {
+        val intent = Intent(this, PostDetailActivity::class.java)
+        intent.putExtra("post_id", item.postId)
+        startActivity(intent)
     }
 
     private fun getPosts() {
+        swipeRefreshLayout.isRefreshing = true
         RetrofitService.getPostApi().getPostList().enqueue(object : Callback<List<Post>> {
             override fun onFailure(call: Call<List<Post>>, t: Throwable) {
+                swipeRefreshLayout.isRefreshing = false
             }
 
             override fun onResponse(call: Call<List<Post>>, response: Response<List<Post>>) {
                 Log.d("My_post_list", response.body().toString())
-
+                if (response.isSuccessful) {
                     val list = response.body()
                     postAdapter?.list = list
                     postAdapter?.notifyDataSetChanged()
-
+                }
+                swipeRefreshLayout.isRefreshing = false
             }
         })
     }
