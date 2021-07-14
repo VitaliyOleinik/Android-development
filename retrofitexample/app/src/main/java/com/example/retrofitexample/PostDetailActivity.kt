@@ -1,13 +1,16 @@
 package com.example.retrofitexample
 
+import android.icu.text.CaseMap
+import android.opengl.Visibility
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import retrofit2.Call
+import retrofit2.Callback
 import retrofit2.Response
-import javax.security.auth.callback.Callback
+
 
 class PostDetailActivity : AppCompatActivity() {
 
@@ -24,15 +27,12 @@ class PostDetailActivity : AppCompatActivity() {
         tvBody = findViewById(R.id.tvBody)
 
         val postId = intent.getIntExtra("post_id", 1)
-        getPost(id = postId)
+
+        getPost(postId)
     }
 
     private fun getPost(id: Int) {
         RetrofitService.getPostApi().getPostById(id).enqueue(object : Callback<Post> {
-            override fun onFailure(call: Call<Post>, t: Throwable) {
-                progressBar.visibility = View.GONE
-            }
-
             override fun onResponse(call: Call<Post>, response: Response<Post>) {
                 progressBar.visibility = View.GONE
                 val post = response.body()
@@ -40,6 +40,10 @@ class PostDetailActivity : AppCompatActivity() {
                     tvBody.text = post.body
                     tvTitle.text = post.title
                 }
+            }
+
+            override fun onFailure(call: Call<Post>, t: Throwable) {
+                progressBar.visibility = View.GONE
             }
         })
     }

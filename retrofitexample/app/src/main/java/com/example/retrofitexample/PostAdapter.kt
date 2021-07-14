@@ -35,7 +35,7 @@ class PostAdapter(
             val tvUserId = view.findViewById<TextView>(R.id.tvUserId)
 
             tvTitle.text = post?.title
-            tvPostId.text = post?.postId.toString()
+            tvPostId.text = post?.id.toString()
             tvUserId.text = post?.userId.toString()
 
             view.setOnClickListener {
@@ -45,7 +45,6 @@ class PostAdapter(
     }
 
     interface RecyclerViewItemClick {
-
         fun itemClick(position: Int, item: Post)
     }
 }
