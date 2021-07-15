@@ -8,16 +8,25 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.FieldPosition
+import kotlin.coroutines.CoroutineContext
 
-class MainActivity : AppCompatActivity(), PostAdapter.RecyclerViewItemClick {
+class MainActivity : AppCompatActivity(), PostAdapter.RecyclerViewItemClick, CoroutineScope {
 
     lateinit var recyclerView: RecyclerView
-
     lateinit var swipeRefreshLayout: SwipeRefreshLayout
+
+    private val job = Job()
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main + job
 
     private var postAdapter: PostAdapter? = null
 
@@ -37,7 +46,12 @@ class MainActivity : AppCompatActivity(), PostAdapter.RecyclerViewItemClick {
         postAdapter = PostAdapter(itemClickListener = this)
         recyclerView.adapter = postAdapter
 
-        getPosts()
+        getPostCoroutine()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        job.cancel()
     }
 
     override fun itemClick(position: Int, item: Post) {
@@ -66,4 +80,21 @@ class MainActivity : AppCompatActivity(), PostAdapter.RecyclerViewItemClick {
             }
         })
     }
+
+    private fun getPostCoroutine() {
+        launch {
+            swipeRefreshLayout.isRefreshing = true
+            val response = RetrofitService.getPostApi().getPostListCoroutine()
+            if (response.isSuccessful){
+                val list = response.body()
+                postAdapter?.list = list
+                postAdapter?.notifyDataSetChanged()
+            } else {
+                Toast.makeText(this@MainActivity, "Error", Toast.LENGTH_SHORT).show()
+            }
+            swipeRefreshLayout.isRefreshing = false
+        }
+    }
+
+
 }
