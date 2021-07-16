@@ -3,6 +3,7 @@ package com.example.retrofitexample.view
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -47,6 +48,13 @@ class MainActivity : AppCompatActivity(), PostAdapter.RecyclerViewItemClick {
         recyclerView.adapter = postAdapter
 
         postListViewModel.getPosts()
+
+        swipeRefreshLayout.isRefreshing = true
+        postListViewModel.liveData.observe(this, Observer { result ->
+            postAdapter?.list = result
+            postAdapter?.notifyDataSetChanged()
+            swipeRefreshLayout.isRefreshing = false
+        })
     }
 
     override fun itemClick(position: Int, item: Post) {

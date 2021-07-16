@@ -19,7 +19,7 @@ class PostListViewModel(
 
     private val postDAO: PostDAO
 
-    private val liveData = MutableLiveData<List<Post>>()
+    val liveData = MutableLiveData<List<Post>>()
 
     init {
         postDAO = PostDatabase.getDatabase(context).postDao()
