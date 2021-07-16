@@ -49,11 +49,21 @@ class MainActivity : AppCompatActivity(), PostAdapter.RecyclerViewItemClick {
 
         postListViewModel.getPosts()
 
-        swipeRefreshLayout.isRefreshing = true
+
         postListViewModel.liveData.observe(this, Observer { result ->
-            postAdapter?.list = result
-            postAdapter?.notifyDataSetChanged()
-            swipeRefreshLayout.isRefreshing = false
+            when (result) {
+                is PostListViewModel.State.ShowLoading -> {
+                    swipeRefreshLayout.isRefreshing = true
+                }
+                is PostListViewModel.State.HideLoading -> {
+                    swipeRefreshLayout.isRefreshing = false
+                }
+                is PostListViewModel.State.Result -> {
+                    postAdapter?.list = result.list
+                    postAdapter?.notifyDataSetChanged()
+                }
+            }
+
         })
     }
 

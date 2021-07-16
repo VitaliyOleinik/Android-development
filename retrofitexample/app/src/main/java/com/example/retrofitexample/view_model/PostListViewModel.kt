@@ -19,7 +19,7 @@ class PostListViewModel(
 
     private val postDAO: PostDAO
 
-    val liveData = MutableLiveData<List<Post>>()
+    val liveData = MutableLiveData<State>()
 
     init {
         postDAO = PostDatabase.getDatabase(context).postDao()
@@ -35,6 +35,7 @@ class PostListViewModel(
 
     fun getPosts(){
         launch {
+            liveData.value = State.ShowLoading
             val list = withContext(Dispatchers.IO){
                 try {
                     val response = RetrofitService.getPostApi().getPostListCoroutine()
@@ -51,7 +52,14 @@ class PostListViewModel(
                     postDAO.getAll() ?: emptyList<Post>()
                 }
             }
-            liveData.postValue(list)
+            liveData.value = State.HideLoading
+            liveData.value = (State.Result(list))
         }
+    }
+
+    sealed class State {
+        object ShowLoading : State()
+        object HideLoading : State()
+        data class Result (val list : List<Post>?) : State()
     }
 }
