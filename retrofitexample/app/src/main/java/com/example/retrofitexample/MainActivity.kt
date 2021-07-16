@@ -8,13 +8,11 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import retrofit2.Retrofit
 import java.text.FieldPosition
 import kotlin.coroutines.CoroutineContext
 
@@ -25,6 +23,8 @@ class MainActivity : AppCompatActivity(), PostAdapter.RecyclerViewItemClick, Cor
 
     private val job = Job()
 
+    private var postDAO: PostDAO? = null
+
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
 
@@ -34,13 +34,15 @@ class MainActivity : AppCompatActivity(), PostAdapter.RecyclerViewItemClick, Cor
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        postDAO = PostDatabase.getDatabase(context = this).postDao()
+
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
         swipeRefreshLayout.setOnRefreshListener {
             postAdapter?.clearAll()
-            getPosts()
+            getPostCoroutine()
         }
 
         postAdapter = PostAdapter(itemClickListener = this)
@@ -62,36 +64,28 @@ class MainActivity : AppCompatActivity(), PostAdapter.RecyclerViewItemClick, Cor
         startActivity(intent)
     }
 
-    private fun getPosts() {
-        swipeRefreshLayout.isRefreshing = true
-        RetrofitService.getPostApi().getPostList().enqueue(object : Callback<List<Post>> {
-            override fun onFailure(call: Call<List<Post>>, t: Throwable) {
-                swipeRefreshLayout.isRefreshing = false
-            }
-
-            override fun onResponse(call: Call<List<Post>>, response: Response<List<Post>>) {
-                Log.d("My_post_list", response.body().toString())
-                if (response.isSuccessful) {
-                    val list = response.body()
-                    postAdapter?.list = list
-                    postAdapter?.notifyDataSetChanged()
-                }
-                swipeRefreshLayout.isRefreshing = false
-            }
-        })
-    }
-
     private fun getPostCoroutine() {
         launch {
             swipeRefreshLayout.isRefreshing = true
-            val response = RetrofitService.getPostApi().getPostListCoroutine()
-            if (response.isSuccessful){
-                val list = response.body()
-                postAdapter?.list = list
-                postAdapter?.notifyDataSetChanged()
-            } else {
-                Toast.makeText(this@MainActivity, "Error", Toast.LENGTH_SHORT).show()
+            val list = withContext(Dispatchers.IO){
+                try {
+                    val response = RetrofitService.getPostApi().getPostListCoroutine()
+                    if (response.isSuccessful) {
+                        val result = response.body()
+                        if (!result.isNullOrEmpty()) {
+                            postDAO?.insertAll(result)
+                        }
+                        result
+                    } else {
+                        postDAO?.getAll() ?: emptyList()
+                    }
+                } catch (e: Exception) {
+                    postDAO?.getAll() ?: emptyList<Post>()
+                }
+
             }
+            postAdapter?.list = list
+            postAdapter?.notifyDataSetChanged()
             swipeRefreshLayout.isRefreshing = false
         }
     }
