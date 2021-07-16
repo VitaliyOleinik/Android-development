@@ -1,4 +1,4 @@
-package com.example.retrofitexample
+package com.example.retrofitexample.model
 
 import android.content.Context
 import androidx.room.Database

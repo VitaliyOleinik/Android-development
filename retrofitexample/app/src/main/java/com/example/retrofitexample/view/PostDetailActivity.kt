@@ -1,12 +1,13 @@
-package com.example.retrofitexample
+package com.example.retrofitexample.view
 
-import android.icu.text.CaseMap
-import android.opengl.Visibility
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
+import com.example.retrofitexample.R
+import com.example.retrofitexample.RetrofitService
+import com.example.retrofitexample.model.Post
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
